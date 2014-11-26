@@ -1,0 +1,14 @@
+{
+    "name": "roryy/Flatfishqueue",
+    "description": "Queue Library with RabbitMQ",
+    "type":"library",
+    "require":{
+        "php": ">=5.3",
+        "videlalvaro/php-amqplib": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Flatfish\\Queue": "src/"
+        }
+    }
+}
