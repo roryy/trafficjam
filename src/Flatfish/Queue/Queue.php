@@ -1,17 +1,20 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Rory
- * Date: 30-11-14
- * Time: 15:22
+ * Flatfish Queue
+ *
+ * @author Rory Scholman <rory@roryy.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Flatfish\Queue;
 
+use Flatfish\Queue\Exception\QueueException;
+
 class Queue extends QueueAbstract {
 
     protected $callback;
-
 
     public function __construct(ConnectionInterface $connection,$name,$exchange = null,$routingkey = null, $durable = true) {
         $this->name = $name;
@@ -25,10 +28,10 @@ class Queue extends QueueAbstract {
 
     public function consume() {
         if(!is_callable($this->callback)) {
-            throw new \Exception('Please specify a callable callback');
+            throw new QueueException('Please specify a callable callback');
         }
 
-        $this->connection->getChannel()->basic_consume();
+        $this->connection->getChannel()->consume($this->name,'',false,true,false,false,$this->callback);
     }
 
     public function setCallback($callback) {
@@ -39,9 +42,5 @@ class Queue extends QueueAbstract {
 
     public function __destruct() {
         $this->connection->disconnect();
-
     }
-
-
-
-} 
+}

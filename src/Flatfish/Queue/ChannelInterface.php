@@ -8,9 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Flatfish\Queue\Exception;
+namespace Flatfish\Queue;
 
+interface ChannelInterface {
 
-class NoConnectionException extends QueueException {
+    public function acknowledge($tag);
+    public function consume($queue,$callback);
+    public function publish(MessageInterface $message);
 
 } 

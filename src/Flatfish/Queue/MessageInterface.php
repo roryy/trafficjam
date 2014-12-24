@@ -8,9 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Flatfish\Queue\Exception;
+namespace Flatfish\Queue;
 
 
-class NoConnectionException extends QueueException {
+use PhpAmqpLib\Message\AMQPMessage;
+
+interface MessageInterface {
+
+    /**
+     * @return AMQPMessage
+     */
+    public function getMessage();
 
 } 
