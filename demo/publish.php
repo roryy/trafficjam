@@ -17,4 +17,7 @@ $connection = new Connection('localhost', 5672, 'guest', 'guest');
 
 
 $queue = new Queue($connection,'testqueue','Flatfish');
-$queue->publish('kaas');
+
+for($i = 1; $i < 10; $i++) {
+    $queue->publish('test ' . $i);
+}
