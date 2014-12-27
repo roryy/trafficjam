@@ -10,6 +10,7 @@
 
 namespace Flatfish\Queue;
 
+use Flatfish\Queue\Exception\NoConnectionException;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class Connection implements ConnectionInterface {
@@ -24,7 +25,7 @@ class Connection implements ConnectionInterface {
      */
     protected $channel;
 
-    public function construct($host,$port,$username,$password) {
+    public function __construct($host,$port,$username,$password) {
         $this->connection = new AMQPStreamConnection($host,$port,$username,$password);
     }
 
@@ -34,7 +35,7 @@ class Connection implements ConnectionInterface {
      */
     public function connect() {
         if(!$this->connection->isConnected()) {
-            throw new \Exception('No connection available');
+            throw new NoConnectionException('No connection available');
         }
 
         return $this;

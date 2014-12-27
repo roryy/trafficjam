@@ -15,4 +15,17 @@ interface PublisherInterface {
 
     public function publish($message);
 
+    /**
+     * @return MessageInterface
+     */
+    public function getMessage();
+
+    public function getName();
+
+    public function getExchange();
+
+    public function getRoutingKey();
+
+    public function getDurable();
+
 } 

@@ -10,10 +10,12 @@
 
 namespace Flatfish\Queue;
 
+use PhpAmqpLib\Message\AMQPMessage;
+
 interface ChannelInterface {
 
-    public function acknowledge($tag);
-    public function consume($queue,$callback);
-    public function publish(MessageInterface $message);
+    public function acknowledge(AMQPMessage $msg);
+    public function consume(ConsumerInterface $consumer, $callback);
+    public function publish(PublisherInterface $publisher);
 
 } 

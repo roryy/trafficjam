@@ -29,14 +29,29 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
      */
     protected $name;
 
+    /**
+     * @var MessageInterface
+     */
+    protected $message;
+
+    /**
+     * @var string
+     */
+    protected $exchange = null;
+
+    /**
+     * @var bool
+     */
+    protected $durable = true;
+
     public function publish($message) {
         if(!$this->connection->isConnected()) {
             throw new NoConnectionException('No connection with RabbitMQ');
         }
 
-        $msg = $this->processMessage($message);
+        $this->setMessage($this->processMessage($message));
 
-        $this->connection->getChannel()->publish($msg);
+        $this->connection->getChannel()->publish($this);
 
         return true;
     }
@@ -51,6 +66,17 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
         }
 
         return new Message($message);
+    }
+
+    /**
+     * @return MessageInterface
+     */
+    public function getMessage() {
+        return $this->message;
+    }
+
+    protected function setMessage(MessageInterface $message) {
+        $this->message = $message;
     }
 
     abstract function consume();
@@ -73,6 +99,22 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
      */
     public function getConnection() {
         return $this->connection;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getExchange() {
+        return $this->exchange;
+    }
+
+    public function getRoutingKey() {
+        return $this->routingKey;
+    }
+
+    public function getDurable() {
+        return $this->durable;
     }
 
 } 

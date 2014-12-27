@@ -16,7 +16,7 @@ interface ConnectionInterface {
     public function connect();
 
     /**
-     * @return Channel
+     * @return ChannelInterface
      */
     public function getChannel();
 

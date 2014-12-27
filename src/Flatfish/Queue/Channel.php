@@ -11,6 +11,7 @@
 namespace Flatfish\Queue;
 
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class Channel implements ChannelInterface {
 
@@ -33,16 +34,20 @@ class Channel implements ChannelInterface {
         return $this->connection;
     }
 
-    public function acknowledge($tag) {
-        $this->channel->basic_ack($tag);
+    public function acknowledge(AMQPMessage $msg) {
+        $this->channel->basic_ack($msg->delivery_info['delivery_tag']);
     }
 
-    public function consume($queue,$callback) {
-        $this->channel->basic_consume($queue,'',false,false,false,false,$callback);
+    public function consume(ConsumerInterface $consumer, $callback) {
+        $this->channel->basic_consume($consumer->getName(),'',false,false,false,false,$callback);
+
+        while(count($this->channel->callbacks)) {
+            $this->channel->wait();
+        }
     }
 
-    public function publish(MessageInterface $message) {
-        $this->channel->basic_publish($message->getMessage());
+    public function publish(PublisherInterface $publisher) {
+		$this->channel->basic_publish($publisher->getMessage()->getMessage(),$publisher->getExchange(),$publisher->getRoutingKey());
     }
 
 } 

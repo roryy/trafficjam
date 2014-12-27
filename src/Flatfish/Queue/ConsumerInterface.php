@@ -15,4 +15,6 @@ interface ConsumerInterface {
 
     public function consume();
 
+    public function getName();
+
 } 

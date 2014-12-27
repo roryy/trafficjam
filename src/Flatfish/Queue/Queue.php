@@ -23,6 +23,9 @@ class Queue extends QueueAbstract {
             $this->routingKey = $name;
         }
 
+        $this->exchange = $exchange;
+        $this->durable = $durable;
+
         $this->setConnection($connection);
     }
 
@@ -31,7 +34,7 @@ class Queue extends QueueAbstract {
             throw new QueueException('Please specify a callable callback');
         }
 
-        $this->connection->getChannel()->consume($this->name,'',false,true,false,false,$this->callback);
+        $this->connection->getChannel()->consume($this,$this->callback);
     }
 
     public function setCallback($callback) {
