@@ -4,7 +4,7 @@
     "type":"library",
     "require":{
         "php": ">=5.3",
-        "videlalvaro/php-amqplib": "dev-master"
+        "videlalvaro/php-amqplib": "~2.4"
     },
     "autoload": {
         "psr-0": {
