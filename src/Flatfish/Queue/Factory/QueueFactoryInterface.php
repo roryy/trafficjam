@@ -10,11 +10,9 @@
 
 namespace Flatfish\Queue\Factory;
 
-use Flatfish\Queue\Connection;
-use Flatfish\Queue\Queue;
 use Flatfish\Queue\QueueAbstract;
 
-class QueueFactory implements QueueFactoryInterface {
+interface QueueFactoryInterface {
 
     /**
      * @param $host
@@ -27,12 +25,6 @@ class QueueFactory implements QueueFactoryInterface {
      * @param bool $durable
      * @return QueueAbstract
      */
-    public static function createQueue($host, $port, $username, $password, $name, $exchange = null, $routingKey = null, $durable = true) {
-        $connection = new Connection($host,$port,$username,$password);
-
-        $queue = new Queue($connection,$name,$exchange,$routingKey,$durable);
-
-        return $queue;
-    }
+    public static function createQueue($host, $port, $username, $password, $name, $exchange = null, $routingKey = null, $durable = true);
 
 } 
