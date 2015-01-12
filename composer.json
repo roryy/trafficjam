@@ -1,5 +1,5 @@
 {
-    "name": "flatfish/Flatfishqueue",
+    "name": "flatfishsoftware/Flatfishqueue",
     "description": "Queue Library with RabbitMQ",
     "type":"library",
     "require":{
