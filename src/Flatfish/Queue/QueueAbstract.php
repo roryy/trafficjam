@@ -7,12 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Flatfish\Queue;
 
 use Flatfish\Queue\Exception\NoConnectionException;
 
-abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
+abstract class QueueAbstract implements ConsumerInterface,PublisherInterface
+{
 
     /**
      * @var ConnectionInterface
@@ -44,8 +44,9 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
      */
     protected $durable = true;
 
-    public function publish($message) {
-        if(!$this->connection->isConnected()) {
+    public function publish($message)
+    {
+        if (!$this->connection->isConnected()) {
             throw new NoConnectionException('No connection with RabbitMQ');
         }
 
@@ -60,8 +61,9 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
      * @param $message
      * @return MessageInterface
      */
-    protected function processMessage($message) {
-        if($message instanceof MessageInterface) {
+    protected function processMessage($message)
+    {
+        if ($message instanceof MessageInterface) {
             return $message;
         }
 
@@ -71,50 +73,59 @@ abstract class QueueAbstract implements ConsumerInterface,PublisherInterface {
     /**
      * @return MessageInterface
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
-    protected function setMessage(MessageInterface $message) {
+    protected function setMessage(MessageInterface $message)
+    {
         $this->message = $message;
     }
 
-    abstract function consume();
+    abstract public function consume();
 
     /**
-     * @param ConnectionInterface $connection
+     * @param  ConnectionInterface $connection
      * @return QueueAbstract
      */
-    public function setConnection(ConnectionInterface $connection) {
+    public function setConnection(ConnectionInterface $connection)
+    {
         $this->connection = $connection;
+
         return $this;
     }
 
-    protected function acknowledge($tag) {
+    protected function acknowledge($tag)
+    {
         $this->connection->getChannel()->acknowledge($tag);
     }
 
     /**
      * @return ConnectionInterface
      */
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->connection;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getExchange() {
+    public function getExchange()
+    {
         return $this->exchange;
     }
 
-    public function getRoutingKey() {
+    public function getRoutingKey()
+    {
         return $this->routingKey;
     }
 
-    public function getDurable() {
+    public function getDurable()
+    {
         return $this->durable;
     }
-
-} 
+}

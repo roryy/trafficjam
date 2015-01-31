@@ -22,7 +22,7 @@ $queue = new Queue($connection,$queueName,$exchangeName,$routingKey);
 
 Or use the included factory
 ~~~
-use Flatfish\Queue\Factory\QueueFactory
+use Flatfish\Queue\Factory\QueueFactory;
 
 $queue = QueueFactory::createQueue('localhost', 5672, 'guest', 'guest',$queueName,$exchangeName,$routingKey);
 ~~~

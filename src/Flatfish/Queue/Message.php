@@ -7,28 +7,28 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Flatfish\Queue;
-
 
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Message implements MessageInterface {
+class Message implements MessageInterface
+{
 
     /**
      * @var AMQPMessage
      */
     protected $message;
 
-    public function __construct($message) {
+    public function __construct($message)
+    {
         $this->message = new AMQPMessage($message);
     }
 
     /**
      * @return AMQPMessage
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
-
-} 
+}
