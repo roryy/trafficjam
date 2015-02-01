@@ -7,11 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Flatfish\Queue\Exception;
 
-use \Exception;
+use Exception;
 
-class QueueException extends Exception {
-
-} 
+class QueueException extends Exception
+{
+}
