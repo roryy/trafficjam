@@ -2,6 +2,7 @@
     "name": "roryy/flatfishqueue",
     "description": "Queue Library with RabbitMQ",
     "type":"library",
+    "license": "MIT",
     "require":{
         "php": ">=5.3",
         "videlalvaro/php-amqplib": "~2.4"
