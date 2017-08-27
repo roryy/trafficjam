@@ -7,8 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Flatfish\Queue;
+namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
+use Flatfish\Queue\ConnectionInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -40,17 +41,33 @@ class Channel implements ChannelInterface
         $this->channel->basic_ack($msg->delivery_info['delivery_tag']);
     }
 
-    public function consume(ConsumerInterface $consumer, $callback)
+    public function consume(RabbitMqQueue $consumer, $callback)
     {
-        $this->channel->basic_consume($consumer->getName(), '', false, false, false, false, $callback);
+        $callback = function ($message) use ($callback) {
+            $message = new ConsumeMessage($message, $this);
+
+            call_user_func($callback, $message);
+        };
+
+        $this->channel->basic_consume(
+            $consumer->getName(),
+            '',
+            false,
+            false,
+            false,
+            false,
+            $callback
+        );
 
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
     }
 
-    public function publish(PublisherInterface $publisher)
+    public function publish(PublishMessage $publisher)
     {
-        $this->channel->basic_publish($publisher->getMessage()->getMessage(), $publisher->getExchange(), $publisher->getRoutingKey());
+        $message = new AMQPMessage($publisher->getMessage());
+
+        $this->channel->basic_publish($message, $publisher->getExchange(), $publisher->getRoutingKey());
     }
 }

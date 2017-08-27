@@ -7,8 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Flatfish\Queue;
+namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
+use Flatfish\Queue\Infrastructure\RabbitMq\Channel;
+use Flatfish\Queue\Infrastructure\RabbitMq\ChannelInterface;
+use Flatfish\Queue\ConnectionInterface;
 use Flatfish\Queue\Exception\NoConnectionException;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
@@ -27,19 +30,18 @@ class Connection implements ConnectionInterface
     public function __construct($host, $port, $username, $password)
     {
         $this->connection = new AMQPStreamConnection($host, $port, $username, $password);
+
+        $this->channel = new Channel($this, $this->connection->channel());
     }
 
     /**
      * @return Connection
+     *
      * @throws \Exception
      */
     public function connect()
     {
-        if (!$this->connection->isConnected()) {
-            throw new NoConnectionException('No connection available');
-        }
-
-        return $this;
+        $this->connection->reconnect();
     }
 
     /**
@@ -47,10 +49,6 @@ class Connection implements ConnectionInterface
      */
     public function getChannel()
     {
-        if (is_null($this->channel)) {
-            $this->channel = new Channel($this, $this->connection->channel());
-        }
-
         return $this->channel;
     }
 
