@@ -9,8 +9,13 @@
  */
 namespace Flatfish\Queue;
 
+use Flatfish\Queue\Infrastructure\RabbitMq\ChannelInterface;
+
 interface ConnectionInterface
 {
+    /**
+     * @return void
+     */
     public function connect();
 
     /**
@@ -18,7 +23,13 @@ interface ConnectionInterface
      */
     public function getChannel();
 
+    /**
+     * @return bool
+     */
     public function isConnected();
 
+    /**
+     * @return void
+     */
     public function disconnect();
 }
