@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+declare(strict_types=1);
+
 namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
 use Flatfish\Queue\Infrastructure\RabbitMq\Channel;
@@ -27,7 +29,7 @@ class Connection implements ConnectionInterface
      */
     protected $channel;
 
-    public function __construct($host, $port, $username, $password)
+    public function __construct(string $host, int $port, string $username, string $password)
     {
         $this->connection = new AMQPStreamConnection($host, $port, $username, $password);
 
@@ -35,11 +37,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @return Connection
-     *
      * @throws \Exception
      */
-    public function connect()
+    public function connect(): void
     {
         $this->connection->reconnect();
     }
@@ -47,24 +47,22 @@ class Connection implements ConnectionInterface
     /**
      * @return ChannelInterface
      */
-    public function getChannel()
+    public function getChannel(): ChannelInterface
     {
         return $this->channel;
     }
 
-    public function setChannel(ChannelInterface $channel)
+    public function setChannel(ChannelInterface $channel): void
     {
         $this->channel = $channel;
-
-        return $this;
     }
 
-    public function isConnected()
+    public function isConnected(): bool
     {
         return $this->connection->isConnected();
     }
 
-    public function disconnect()
+    public function disconnect(): void
     {
         $this->connection->close();
     }

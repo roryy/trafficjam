@@ -4,8 +4,8 @@
     "type":"library",
     "license": "MIT",
     "require":{
-        "php": ">=5.3",
-        "php-amqplib/php-amqplib": "~2.6",
+        "php": ">=7.1",
+        "php-amqplib/php-amqplib": "~2.7",
         "psr/log": "^1.0"
     },
     "autoload": {

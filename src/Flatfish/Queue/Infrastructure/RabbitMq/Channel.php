@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+declare(strict_types=1);
+
 namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
 use Flatfish\Queue\ConnectionInterface;
@@ -31,17 +33,17 @@ class Channel implements ChannelInterface
         $this->channel = $channel;
     }
 
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
 
-    public function acknowledge(AMQPMessage $msg)
+    public function acknowledge(AMQPMessage $msg): void
     {
         $this->channel->basic_ack($msg->delivery_info['delivery_tag']);
     }
 
-    public function consume(RabbitMqQueue $consumer, $callback)
+    public function consume(RabbitMqQueue $consumer, callable $callback): void
     {
         $callback = function ($message) use ($callback) {
             $message = new ConsumeMessage($message, $this);
@@ -64,7 +66,7 @@ class Channel implements ChannelInterface
         }
     }
 
-    public function publish(PublishMessage $publisher)
+    public function publish(PublishMessage $publisher): void
     {
         $message = new AMQPMessage($publisher->getMessage());
 

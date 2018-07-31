@@ -7,10 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+declare(strict_types=1);
 
 namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
-use Flatfish\Queue\Exception\ConsumerNotCallableException;
 use Flatfish\Queue\Exception\NoConnectionException;
 use Flatfish\Queue\Exception\QueueException;
 use Flatfish\Queue\Queue;
@@ -50,15 +50,13 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
      */
     private $logger;
 
-    /**
-     * @param Connection $connection
-     * @param string     $name
-     * @param string     $exchange
-     * @param string     $routingKey
-     * @param bool       $durable
-     */
-    public function __construct(Connection $connection, $name, $exchange = null, $routingKey = null, $durable = true)
-    {
+    public function __construct(
+        Connection $connection,
+        string $name,
+        ?string $exchange = null,
+        ?string $routingKey = null,
+        bool $durable = true
+    ) {
         $this->connection = $connection;
         $this->name = $name;
         $this->exchange = $exchange;
@@ -75,18 +73,9 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
      *
      * @throws QueueException
      */
-    public function consume($callback)
+    public function consume(callable $callback): void
     {
         $this->checkConnection();
-
-        if (!is_callable($callback)) {
-            $this->getLogger()->error('Callback is not callable', [
-                'queueName' => $this->name,
-                'exchange' => $this->exchange,
-            ]);
-
-            throw new ConsumerNotCallableException('Please specify a callable callback');
-        }
 
         $this->connection->getChannel()->consume($this, $callback);
     }
@@ -96,7 +85,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
      *
      * @throws NoConnectionException
      */
-    public function publish($message)
+    public function publish(string $message): void
     {
         $this->checkConnection();
 
@@ -110,7 +99,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return Connection
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->connection;
     }
@@ -118,7 +107,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return string
      */
-    public function getRoutingKey()
+    public function getRoutingKey(): string
     {
         return $this->routingKey;
     }
@@ -126,7 +115,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -134,7 +123,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return string
      */
-    public function getExchange()
+    public function getExchange(): string
     {
         return $this->exchange;
     }
@@ -142,7 +131,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return bool
      */
-    public function isDurable()
+    public function isDurable(): bool
     {
         return $this->durable;
     }
@@ -152,7 +141,10 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
         $this->connection->disconnect();
     }
 
-    private function checkConnection()
+    /**
+     * @throws NoConnectionException
+     */
+    private function checkConnection(): void
     {
         if (!$this->connection->isConnected()) {
             $this->getLogger()->error('No connection with RabbitMq', [
@@ -167,7 +159,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         if (!$this->logger) {
             $this->logger = new NullLogger();
@@ -179,7 +171,7 @@ class RabbitMqQueue implements Queue, LoggerAwareInterface
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

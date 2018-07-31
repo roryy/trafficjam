@@ -77,26 +77,7 @@ class RabbitMqQueueTest extends TestCase
 
         $connection = $this->prophesize(Connection::class);
         $connection->isConnected()->willReturn(true);
-        $connection->disconnect()->willReturn(true);
         $connection->getChannel()->willReturn($channel);
-
-        $rabbitMqQueue = new RabbitMqQueue(
-            $connection->reveal(),
-            'test_queue',
-            'test_exchange'
-        );
-
-        $this->assertNull($rabbitMqQueue->consume($callback));
-    }
-
-    /**
-     * @expectedException \Flatfish\Queue\Exception\ConsumerNotCallableException
-     * @expectedExceptionMessage Please specify a callable callback
-     */
-    public function test_callback_is_not_callable_when_consume()
-    {
-        $connection = $this->prophesize(Connection::class);
-        $connection->isConnected()->willReturn(true);
         $connection->disconnect()->shouldBeCalled();
 
         $rabbitMqQueue = new RabbitMqQueue(
@@ -105,7 +86,9 @@ class RabbitMqQueueTest extends TestCase
             'test_exchange'
         );
 
-        $rabbitMqQueue->consume('test');
+        $this->assertNull($rabbitMqQueue->consume($callback));
+
+        $rabbitMqQueue->__destruct();
     }
 
     /**
