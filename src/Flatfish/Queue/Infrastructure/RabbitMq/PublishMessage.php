@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+declare(strict_types=1);
 
 namespace Flatfish\Queue\Infrastructure\RabbitMq;
 
@@ -42,7 +43,7 @@ class PublishMessage
     /**
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -50,7 +51,7 @@ class PublishMessage
     /**
      * @return string
      */
-    public function getExchange()
+    public function getExchange(): string
     {
         return $this->exchange;
     }
@@ -58,7 +59,7 @@ class PublishMessage
     /**
      * @return string
      */
-    public function getRoutingKey()
+    public function getRoutingKey(): string
     {
         return $this->routingKey;
     }

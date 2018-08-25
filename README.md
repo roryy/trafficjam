@@ -1,5 +1,7 @@
 # Flatfishqueue
 
+[![Build Status](https://travis-ci.org/roryy/flatfishqueue.svg?branch=master)](https://travis-ci.org/roryy/flatfishqueue)
+
 PHP queue library for RabbitMQ and in the future SQS
 
 ## Installation
