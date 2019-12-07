@@ -9,7 +9,7 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Infrastructure\RabbitMq;
+namespace FlatfishQueue\Infrastructure\RabbitMq;
 
 class PublishMessage
 {
@@ -21,46 +21,32 @@ class PublishMessage
     /**
      * @var string
      */
-    private $exchange;
+    private $routingKey;
 
     /**
      * @var string
      */
-    private $routingKey;
+    private $exchange;
 
-    /**
-     * @param string $message
-     * @param string $exchange
-     * @param string $routingKey
-     */
-    public function __construct($message, $exchange, $routingKey)
+    public function __construct(string $message, string $routingKey, ?string $exchange)
     {
         $this->message = $message;
-        $this->exchange = $exchange;
         $this->routingKey = $routingKey;
+        $this->exchange = $exchange;
     }
 
-    /**
-     * @return string
-     */
     public function getMessage(): string
     {
         return $this->message;
     }
 
-    /**
-     * @return string
-     */
-    public function getExchange(): string
-    {
-        return $this->exchange;
-    }
-
-    /**
-     * @return string
-     */
     public function getRoutingKey(): string
     {
         return $this->routingKey;
+    }
+
+    public function getExchange(): string
+    {
+        return $this->exchange;
     }
 }

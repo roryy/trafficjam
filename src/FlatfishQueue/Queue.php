@@ -9,8 +9,11 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Exception;
+namespace FlatfishQueue;
 
-class NoConnectionException extends QueueException
+interface Queue
 {
+    public function publish(string $message): void;
+
+    public function consume(callable $callback): void;
 }

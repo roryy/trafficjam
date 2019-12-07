@@ -9,52 +9,37 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Infrastructure\RabbitMq;
+namespace FlatfishQueue\Infrastructure\RabbitMq;
 
-use Flatfish\Queue\Infrastructure\RabbitMq\Channel;
-use Flatfish\Queue\Infrastructure\RabbitMq\ChannelInterface;
-use Flatfish\Queue\ConnectionInterface;
-use Flatfish\Queue\Exception\NoConnectionException;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-class Connection implements ConnectionInterface
+class Connection
 {
     /**
      * @var AMQPStreamConnection
      */
-    protected $connection;
+    private $connection;
 
     /**
-     * @var ChannelInterface
+     * @var Channel
      */
-    protected $channel;
+    private $channel;
 
     public function __construct(string $host, int $port, string $username, string $password)
     {
         $this->connection = new AMQPStreamConnection($host, $port, $username, $password);
 
-        $this->channel = new Channel($this, $this->connection->channel());
+        $this->channel = new Channel($this->connection->channel());
     }
 
-    /**
-     * @throws \Exception
-     */
     public function connect(): void
     {
         $this->connection->reconnect();
     }
 
-    /**
-     * @return ChannelInterface
-     */
-    public function getChannel(): ChannelInterface
+    public function getChannel(): Channel
     {
         return $this->channel;
-    }
-
-    public function setChannel(ChannelInterface $channel): void
-    {
-        $this->channel = $channel;
     }
 
     public function isConnected(): bool
@@ -64,6 +49,7 @@ class Connection implements ConnectionInterface
 
     public function disconnect(): void
     {
+        $this->channel->disconnect();
         $this->connection->close();
     }
 }

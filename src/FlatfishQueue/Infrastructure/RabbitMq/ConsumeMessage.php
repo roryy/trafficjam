@@ -9,12 +9,12 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Infrastructure\RabbitMq;
+namespace FlatfishQueue\Infrastructure\RabbitMq;
 
-use Flatfish\Queue\Consumable;
+use FlatfishQueue\Consumable;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class ConsumeMessage implements Consumable
+final class ConsumeMessage implements Consumable
 {
     /**
      * @var AMQPMessage
@@ -22,27 +22,21 @@ class ConsumeMessage implements Consumable
     private $message;
 
     /**
-     * @var ChannelInterface
+     * @var Channel
      */
     private $channel;
 
-    public function __construct(AMQPMessage $message, ChannelInterface $channel)
+    public function __construct(AMQPMessage $message, Channel $channel)
     {
         $this->message = $message;
         $this->channel = $channel;
     }
 
-    /**
-     * @return string
-     */
     public function getMessage(): string
     {
         return $this->message->getBody();
     }
 
-    /**
-     * @return void
-     */
     public function acknowledge(): void
     {
         $this->channel->acknowledge($this->message);
