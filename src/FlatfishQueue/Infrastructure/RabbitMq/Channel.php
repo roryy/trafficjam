@@ -9,41 +9,29 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Infrastructure\RabbitMq;
+namespace FlatfishQueue\Infrastructure\RabbitMq;
 
-use Flatfish\Queue\ConnectionInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Channel implements ChannelInterface
+class Channel
 {
-    /**
-     * @var ConnectionInterface
-     */
-    protected $connection;
-
     /**
      * @var AMQPChannel
      */
-    protected $channel;
+    private $channel;
 
-    public function __construct(ConnectionInterface $connection, AMQPChannel $channel)
+    public function __construct(AMQPChannel $channel)
     {
-        $this->connection = $connection;
         $this->channel = $channel;
-    }
-
-    public function getConnection(): ConnectionInterface
-    {
-        return $this->connection;
     }
 
     public function acknowledge(AMQPMessage $msg): void
     {
-        $this->channel->basic_ack($msg->delivery_info['delivery_tag']);
+        $this->channel->basic_ack($msg->getDeliveryTag());
     }
 
-    public function consume(RabbitMqQueue $consumer, callable $callback): void
+    public function consume(string $name, callable $callback): void
     {
         $callback = function ($message) use ($callback) {
             $message = new ConsumeMessage($message, $this);
@@ -52,7 +40,7 @@ class Channel implements ChannelInterface
         };
 
         $this->channel->basic_consume(
-            $consumer->getName(),
+            $name,
             '',
             false,
             false,
@@ -61,7 +49,7 @@ class Channel implements ChannelInterface
             $callback
         );
 
-        while (count($this->channel->callbacks)) {
+        while ($this->channel->is_consuming()) {
             $this->channel->wait();
         }
     }
@@ -71,5 +59,10 @@ class Channel implements ChannelInterface
         $message = new AMQPMessage($publisher->getMessage());
 
         $this->channel->basic_publish($message, $publisher->getExchange(), $publisher->getRoutingKey());
+    }
+
+    public function disconnect(): void
+    {
+        $this->channel->close();
     }
 }

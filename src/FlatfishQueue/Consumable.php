@@ -9,10 +9,17 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue\Exception;
+namespace FlatfishQueue;
 
-use Exception;
-
-class QueueException extends Exception
+interface Consumable
 {
+    /**
+     * @return string
+     */
+    public function getMessage(): string;
+
+    /**
+     * @return void
+     */
+    public function acknowledge(): void;
 }

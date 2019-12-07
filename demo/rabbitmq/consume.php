@@ -9,17 +9,19 @@
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use Flatfish\Queue\Consumable;
-use Flatfish\Queue\Infrastructure\RabbitMq\Connection;
-use Flatfish\Queue\Infrastructure\RabbitMq\RabbitMqQueue;
+use FlatfishQueue\Consumable;
+use FlatfishQueue\Infrastructure\RabbitMq\Connection;
+use FlatfishQueue\Infrastructure\RabbitMq\RabbitMqQueue;
 
 $connection = new Connection('localhost', 5672, 'guest', 'guest');
 
 $queue = new RabbitMqQueue($connection, 'test_queue', 'flatfish', 'testqueue');
 
-$queue->consume(function (Consumable $msg) use ($queue) {
+$queue->consume(function (Consumable $msg) {
     $message = $msg->getMessage();
     echo ' msg: '. $message .PHP_EOL;
 
     $msg->acknowledge();
 });
+
+$queue->disconnect();

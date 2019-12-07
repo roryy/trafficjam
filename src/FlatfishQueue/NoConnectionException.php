@@ -9,17 +9,10 @@
  */
 declare(strict_types=1);
 
-namespace Flatfish\Queue;
+namespace FlatfishQueue;
 
-interface Consumable
+use Exception;
+
+class NoConnectionException extends Exception
 {
-    /**
-     * @return string
-     */
-    public function getMessage(): string;
-
-    /**
-     * @return void
-     */
-    public function acknowledge(): void;
 }

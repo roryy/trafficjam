@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/roryy/flatfishqueue.svg?branch=master)](https://travis-ci.org/roryy/flatfishqueue)
 
-PHP queue library for RabbitMQ and in the future SQS
+PHP queue library for RabbitMQ. It's possible to add more queue types like SQS
+
+Please do not use in production as BC breaks can occur before reaching version 1.0.
 
 ## Installation
 ~~~
@@ -14,8 +16,8 @@ To use flatfish queue in combination with rabbitmq, first you must setup your ra
 
 Like this:
 ~~~
-use Flatfish\Queue\Infrastructure\RabbitMq\Connection;
-use Flatfish\Queue\Infrastructure\RabbitMq\RabbitMqQueue;
+use FlatfishQueue\Infrastructure\RabbitMq\Connection;
+use FlatfishQueue\Infrastructure\RabbitMq\RabbitMqQueue;
 
 $connection = new Connection('localhost', 5672, 'guest', 'guest');
 ~~~
@@ -33,7 +35,7 @@ $queue->publish('test 2');
 
 And consume (with a callback), don't forget to acknowledge
 ~~~
-$queue->consume(function (Consumable $msg) use ($queue) {
+$queue->consume(function (Consumable $msg) {
     $message = $msg->getMessage();
     echo ' msg: '. $message .PHP_EOL;
 
