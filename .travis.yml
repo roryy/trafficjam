@@ -11,3 +11,4 @@ install:
 
 script:
   - vendor/bin/phpunit
+  - php code-coverage.php clover.xml 80
