@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,7 +9,7 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\RabbitMq;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 

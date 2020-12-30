@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,10 +9,12 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\RabbitMq;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use Trafficjam\BasicConsumeMessage;
+use Trafficjam\ConsumeMessage;
 
 class Channel
 {
@@ -26,15 +28,15 @@ class Channel
         $this->channel = $channel;
     }
 
-    public function acknowledge(AMQPMessage $msg): void
+    public function acknowledge(int $deliveryTag): void
     {
-        $this->channel->basic_ack($msg->getDeliveryTag());
+        $this->channel->basic_ack($deliveryTag);
     }
 
     public function consume(string $name, callable $callback): void
     {
-        $callback = function ($message) use ($callback) {
-            $message = new ConsumeMessage($message, $this);
+        $callback = function (AMQPMessage $message) use ($callback) {
+            $message = new BasicConsumeMessage($message->getBody(), (string) $message->getDeliveryTag());
 
             call_user_func($callback, $message);
         };
@@ -52,6 +54,14 @@ class Channel
         while ($this->channel->is_consuming()) {
             $this->channel->wait();
         }
+    }
+
+    public function pop(string $name): ConsumeMessage
+    {
+        /** @var AMQPMessage $message */
+        $message = $this->channel->basic_get($name);
+
+        return new BasicConsumeMessage($message->getBody(), (string) $message->getDeliveryTag());
     }
 
     public function publish(PublishMessage $publisher): void

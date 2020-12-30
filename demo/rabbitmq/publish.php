@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,12 +9,15 @@
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use FlatfishQueue\Infrastructure\RabbitMq\Connection;
-use FlatfishQueue\Infrastructure\RabbitMq\RabbitMqQueue;
+use Trafficjam\RabbitMq\Connection;
+use Trafficjam\RabbitMq\RabbitMqQueue;
+use Trafficjam\Trafficjam;
 
 $connection = new Connection('localhost', 5672, 'guest', 'guest');
 
-$queue = new RabbitMqQueue($connection, 'test_queue', 'flatfish');
+$queue = new RabbitMqQueue($connection, 'test_queue', true);
+
+$trafficjam = new Trafficjam($queue);
 
 for ($i = 1; $i < 10; $i++) {
     $queue->publish('test '.$i);

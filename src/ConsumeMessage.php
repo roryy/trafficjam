@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,17 +9,13 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue;
+namespace Trafficjam;
 
-interface Consumable
+use DateTimeInterface;
+
+interface ConsumeMessage
 {
-    /**
-     * @return string
-     */
     public function getMessage(): string;
 
-    /**
-     * @return void
-     */
-    public function acknowledge(): void;
+    public function getId(): string;
 }

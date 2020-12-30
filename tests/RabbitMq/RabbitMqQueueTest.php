@@ -1,19 +1,24 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\Test\RabbitMq;
 
-use FlatfishQueue\Consumable;
-use FlatfishQueue\NoConnectionException;
+use Trafficjam\BasicConsumeMessage;
+use Trafficjam\ConsumeMessage;
+use Trafficjam\NoConnectionException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Trafficjam\RabbitMq\Channel;
+use Trafficjam\RabbitMq\Connection;
+use Trafficjam\RabbitMq\PublishMessage;
+use Trafficjam\RabbitMq\RabbitMqQueue;
 
 class RabbitMqQueueTest extends TestCase
 {
@@ -29,7 +34,7 @@ class RabbitMqQueueTest extends TestCase
      */
     private $queue;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->connection = $this->createMock(Connection::class);
 
@@ -60,9 +65,7 @@ class RabbitMqQueueTest extends TestCase
         $channel->expects($this->once())
             ->method('publish')
             ->with(new PublishMessage(
-                self::TEST_MESSAGE,
-                'routing',
-                'exchange'
+                self::TEST_MESSAGE
             ));
 
         $this->connection
@@ -70,8 +73,6 @@ class RabbitMqQueueTest extends TestCase
             ->method('getChannel')
             ->willReturn($channel);
 
-        $this->queue->withExchange('exchange');
-        $this->queue->withRoutingKey('routing');
         $this->queue->publish(self::TEST_MESSAGE);
     }
 
@@ -99,7 +100,8 @@ class RabbitMqQueueTest extends TestCase
     {
         $this->connect();
 
-        $callback = function (Consumable $msg) {};
+        $callback = function (ConsumeMessage $msg) {
+        };
 
         /** @var Channel|MockObject $channel */
         $channel = $this->createMock(Channel::class);
@@ -116,6 +118,52 @@ class RabbitMqQueueTest extends TestCase
             ->willReturn($channel);
 
         $this->queue->consume($callback);
+    }
+
+    /**
+     * @test
+     */
+    public function testQueueMessageCanBeAcknowledge(): void
+    {
+        /** @var Channel|MockObject $channel */
+        $channel = $this->createMock(Channel::class);
+        $channel->expects($this->once())
+            ->method('acknowledge')
+            ->with(1);
+
+        $this->connection
+            ->expects($this->once())
+            ->method('getChannel')
+            ->willReturn($channel);
+
+        $this->queue->acknowledge(
+            new BasicConsumeMessage(self::TEST_MESSAGE, '1')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function testQueuePopReturnsMessage(): void
+    {
+        $consumeMessage = new BasicConsumeMessage(self::TEST_MESSAGE, '1');
+
+        /** @var Channel|MockObject $channel */
+        $channel = $this->createMock(Channel::class);
+        $channel->expects($this->once())
+            ->method('pop')
+            ->with(self::QUEUE_NAME)
+            ->willReturn($consumeMessage);
+
+        $this->connection
+            ->expects($this->once())
+            ->method('getChannel')
+            ->willReturn($channel);
+
+        $this->assertSame(
+            $consumeMessage,
+            $this->queue->pop()
+        );
     }
 
     /**
