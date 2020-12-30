@@ -1,12 +1,22 @@
 <?php
+/**
+ * Traffic jam
+ *
+ * @author Rory Scholman <rory@roryy.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Trafficjam\Test\RabbitMq;
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
-
-use FlatfishQueue\Consumable;
+use Trafficjam\BasicConsumeMessage;
+use Trafficjam\ConsumeMessage;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Trafficjam\RabbitMq\Channel;
+use Trafficjam\RabbitMq\PublishMessage;
 
 class ChannelTest extends TestCase
 {
@@ -43,18 +53,12 @@ class ChannelTest extends TestCase
      */
     public function testChannelCanAcknowledge()
     {
-        /** @var AMQPMessage|MockObject $msg */
-        $msg = $this->createMock(AMQPMessage::class);
-        $msg->expects($this->once())
-            ->method('getDeliveryTag')
-            ->willReturn(1);
-
         $this->amqpChannel
             ->expects($this->once())
             ->method('basic_ack')
             ->with(1);
 
-        $this->channel->acknowledge($msg);
+        $this->channel->acknowledge(1);
     }
 
     /**
@@ -62,10 +66,9 @@ class ChannelTest extends TestCase
      */
     public function testChannelCanConsume()
     {
-        $callback = function (Consumable $msg) {
+        $callback = function (ConsumeMessage $msg) {
             $this->assertSame(self::MESSAGE, $msg->getMessage());
-
-            $msg->acknowledge();
+            $this->assertSame('1', $msg->getId());
         };
 
         $this->amqpChannel
@@ -78,15 +81,15 @@ class ChannelTest extends TestCase
                 false,
                 false,
                 false,
-                function ($message) use ($callback) {
-                    $message = new ConsumeMessage($message, $this->channel);
+                function (AMQPMessage $message) use ($callback) {
+                    $message = new BasicConsumeMessage($message->body, $message->getDeliveryTag());
 
                     call_user_func($callback, $message);
                 }
             )
             ->will(
                 $this->returnCallback(
-                    function ($queue , $consumer_tag, $no_local, $no_ack, $exclusive, $nowait, $callback, $ticket, $arguments) {
+                    function ($queue, $consumer_tag, $no_local, $no_ack, $exclusive, $nowait, $callback, $ticket, $arguments) {
                         /** @var AMQPMessage|MockObject $msg */
                         $msg = $this->createMock(AMQPMessage::class);
                         $msg->expects($this->once())

@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,7 +9,7 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\RabbitMq;
 
 class PublishMessage
 {
@@ -28,7 +28,7 @@ class PublishMessage
      */
     private $exchange;
 
-    public function __construct(string $message, string $routingKey, ?string $exchange)
+    public function __construct(string $message, ?string $routingKey = null, ?string $exchange = null)
     {
         $this->message = $message;
         $this->routingKey = $routingKey;
@@ -40,12 +40,12 @@ class PublishMessage
         return $this->message;
     }
 
-    public function getRoutingKey(): string
+    public function getRoutingKey(): ?string
     {
         return $this->routingKey;
     }
 
-    public function getExchange(): string
+    public function getExchange(): ?string
     {
         return $this->exchange;
     }

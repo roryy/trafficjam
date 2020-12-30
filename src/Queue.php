@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,11 +9,18 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue;
+namespace Trafficjam;
 
 interface Queue
 {
     public function publish(string $message): void;
 
     public function consume(callable $callback): void;
+
+    public function acknowledge(ConsumeMessage $consumeMessage): void;
+
+    /**
+     * @throws QueueIsEmpty
+     */
+    public function pop(): ConsumeMessage;
 }

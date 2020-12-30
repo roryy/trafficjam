@@ -1,6 +1,4 @@
-# Flatfishqueue
-
-[![Build Status](https://travis-ci.org/roryy/flatfishqueue.svg?branch=master)](https://travis-ci.org/roryy/flatfishqueue)
+# Traffic jam
 
 PHP queue library for RabbitMQ. It's possible to add more queue types like SQS
 
@@ -8,38 +6,39 @@ Please do not use in production as BC breaks can occur before reaching version 1
 
 ## Installation
 ~~~
-composer require roryy/flatfishqueue
+composer require roryy/trafficjam "0.5.*"
 ~~~
 
 ## Usage
-To use flatfish queue in combination with rabbitmq, first you must setup your rabbitmq credentials
+To use the Trafficjam library in combination with Rabbitmq, you have to setup your Rabbitmq credentials first.
 
 Like this:
 ~~~
-use FlatfishQueue\Infrastructure\RabbitMq\Connection;
-use FlatfishQueue\Infrastructure\RabbitMq\RabbitMqQueue;
+use Trafficjam\Infrastructure\RabbitMq\Connection;
+use Trafficjam\Infrastructure\RabbitMq\RabbitMqQueue;
 
 $connection = new Connection('localhost', 5672, 'guest', 'guest');
 ~~~
 
 Then create a queue like this:
 ~~~
-$queue = new RabbitMqQueue($connection, $queueName, $exchange, $routingKey);
+$queue = new RabbitMqQueue($connection, $queueName, $durable, $exchange, $routingKey);
+$trafficjam = new Trafficjam($queue);
 ~~~
 
 To publish one or more messages to your queue:
 ~~~
-$queue->publish('test 1');
-$queue->publish('test 2');
+$trafficjam->publish('test 1');
+$trafficjam->publish('test 2');
 ~~~
 
 And consume (with a callback), don't forget to acknowledge
 ~~~
-$queue->consume(function (Consumable $msg) {
+$trafficjam->consume(function (Consumable $msg) use ($trafficjam) {
     $message = $msg->getMessage();
     echo ' msg: '. $message .PHP_EOL;
 
-    $msg->acknowledge();
+    $trafficjam->acknowledge($msg);
 });
 ~~~
 
@@ -53,7 +52,7 @@ test 2
 In the future this library will also going to support SQS.
 
 ## Contribute
-If you want to use another queuing system besides RabbitMQ then please implement the Queue interface when creating your own. Please submit a pull request.
+If you want to use another queuing system besides RabbitMQ then please implement the Queue interface when creating your own. Please create a pull request.
 
 ## License
-FlatfishQueue is licensed under the MIT License. See the bundled LICENSE file for details.
+Trafficjam is licensed under the MIT License. See the bundled LICENSE file for details.

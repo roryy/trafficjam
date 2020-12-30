@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,12 +9,13 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\RabbitMq;
 
-use FlatfishQueue\Consumable;
+use DateTimeInterface;
+use Trafficjam\ConsumeMessage;
 use PhpAmqpLib\Message\AMQPMessage;
 
-final class ConsumeMessage implements Consumable
+final class Message implements ConsumeMessage
 {
     /**
      * @var AMQPMessage
@@ -35,6 +36,16 @@ final class ConsumeMessage implements Consumable
     public function getMessage(): string
     {
         return $this->message->getBody();
+    }
+
+    public function getDateTime(): DateTimeInterface
+    {
+        // TODO: Implement getDateTime() method.
+    }
+
+    public function getId(): string
+    {
+        return (string) $this->message->getDeliveryTag();
     }
 
     public function acknowledge(): void

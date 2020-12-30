@@ -1,6 +1,6 @@
 <?php
 /**
- * Flatfish Queue
+ * Traffic jam
  *
  * @author Rory Scholman <rory@roryy.com>
  *
@@ -9,10 +9,11 @@
  */
 declare(strict_types=1);
 
-namespace FlatfishQueue\Infrastructure\RabbitMq;
+namespace Trafficjam\RabbitMq;
 
-use FlatfishQueue\NoConnectionException;
-use FlatfishQueue\Queue;
+use Trafficjam\ConsumeMessage;
+use Trafficjam\NoConnectionException;
+use Trafficjam\Queue;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -30,7 +31,7 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
     private $name;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $routingKey;
 
@@ -40,9 +41,9 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
     private $durable;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $exchange = null;
+    private $exchange;
 
     /**
      * @var LoggerInterface
@@ -52,26 +53,17 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
     public function __construct(
         Connection $connection,
         string $name,
-        bool $durable = true
+        bool $durable = true,
+        ?string $exchange = null,
+        ?string $routingKey = null
     ) {
         $this->connection = $connection;
         $this->name = $name;
         $this->routingKey = $name;
-
         $this->durable = $durable;
         $this->logger = new NullLogger();
-    }
-
-    /**
-     * @param callable $callback
-     *
-     * @throws NoConnectionException
-     */
-    public function consume(callable $callback): void
-    {
-        $this->checkConnection();
-
-        $this->connection->getChannel()->consume($this->getName(), $callback);
+        $this->exchange = $exchange;
+        $this->routingKey = $routingKey;
     }
 
     /**
@@ -90,14 +82,26 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
         ));
     }
 
-    public function withExchange(string $exchange): void
+    /**
+     * @param callable $callback
+     *
+     * @throws NoConnectionException
+     */
+    public function consume(callable $callback): void
     {
-        $this->exchange = $exchange;
+        $this->checkConnection();
+
+        $this->connection->getChannel()->consume($this->getName(), $callback);
     }
 
-    public function withRoutingKey(string $routingKey): void
+    public function acknowledge(ConsumeMessage $consumeMessage): void
     {
-        $this->routingKey = $routingKey;
+        $this->connection->getChannel()->acknowledge((int) $consumeMessage->getId());
+    }
+
+    public function pop(): ConsumeMessage
+    {
+        return $this->connection->getChannel()->pop($this->getName());
     }
 
     public function getName(): string
