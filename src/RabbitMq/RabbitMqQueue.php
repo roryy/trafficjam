@@ -75,9 +75,14 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
     {
         $this->checkConnection();
 
+        $routingKey = $this->routingKey;
+        if (empty($routingKey)) {
+            $routingKey = $this->name;
+        }
+
         $this->connection->getChannel()->publish(new PublishMessage(
             $message,
-            $this->routingKey,
+            $routingKey,
             $this->exchange
         ));
     }

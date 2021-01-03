@@ -65,7 +65,8 @@ class RabbitMqQueueTest extends TestCase
         $channel->expects($this->once())
             ->method('publish')
             ->with(new PublishMessage(
-                self::TEST_MESSAGE
+                self::TEST_MESSAGE,
+                self::QUEUE_NAME
             ));
 
         $this->connection
