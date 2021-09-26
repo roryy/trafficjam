@@ -48,7 +48,7 @@ class RabbitMqQueueTest extends TestCase
     /**
      * @test
      */
-    public function testQueueCanBeCreated()
+    public function testQueueCanBeCreated(): void
     {
         $this->assertInstanceOf(RabbitMqQueue::class, $this->queue);
     }
@@ -56,7 +56,7 @@ class RabbitMqQueueTest extends TestCase
     /**
      * @test
      */
-    public function testQueueMessageCanBePublishedWithExchangeAndRoutingKey()
+    public function testQueueMessageCanBePublishedWithExchangeAndRoutingKey(): void
     {
         $this->connect();
 
@@ -80,7 +80,7 @@ class RabbitMqQueueTest extends TestCase
     /**
      * @test
      */
-    public function testQueueMessageCannotBePublishedWithoutConnection()
+    public function testQueueMessageCannotBePublishedWithoutConnection(): void
     {
         $this->expectException(NoConnectionException::class);
         $this->expectExceptionMessage('No connection with RabbitMQ');
@@ -97,7 +97,7 @@ class RabbitMqQueueTest extends TestCase
     /**
      * @test
      */
-    public function testQueueMessageCanBeConsumed()
+    public function testQueueMessageCanBeConsumed(): void
     {
         $this->connect();
 
@@ -170,7 +170,7 @@ class RabbitMqQueueTest extends TestCase
     /**
      * @test
      */
-    public function testQueueCanBeDisconnect()
+    public function testQueueCanBeDisconnect(): void
     {
         $this->connection
             ->expects($this->once())
@@ -179,7 +179,7 @@ class RabbitMqQueueTest extends TestCase
         $this->queue->disconnect();
     }
 
-    private function connect(bool $isConnected = true)
+    private function connect(bool $isConnected = true): void
     {
         $this->connection
             ->expects($this->once())

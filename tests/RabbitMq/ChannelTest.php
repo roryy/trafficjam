@@ -33,7 +33,7 @@ class ChannelTest extends TestCase
      */
     private $channel;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->amqpChannel = $this->createMock(AMQPChannel::class);
 
@@ -43,7 +43,7 @@ class ChannelTest extends TestCase
     /**
      * @test
      */
-    public function testChannelCanBeCreated()
+    public function testChannelCanBeCreated(): void
     {
         $this->assertInstanceOf(Channel::class, $this->channel);
     }
@@ -51,7 +51,7 @@ class ChannelTest extends TestCase
     /**
      * @test
      */
-    public function testChannelCanAcknowledge()
+    public function testChannelCanAcknowledge(): void
     {
         $this->amqpChannel
             ->expects($this->once())
@@ -64,7 +64,7 @@ class ChannelTest extends TestCase
     /**
      * @test
      */
-    public function testChannelCanConsume()
+    public function testChannelCanConsume(): void
     {
         $callback = function (ConsumeMessage $msg) {
             $this->assertSame(self::MESSAGE, $msg->getMessage());
@@ -116,7 +116,7 @@ class ChannelTest extends TestCase
     /**
      * @test
      */
-    public function testChannelCanPublish()
+    public function testChannelCanPublish(): void
     {
         $this->amqpChannel
             ->expects($this->once())
@@ -137,7 +137,7 @@ class ChannelTest extends TestCase
     /**
      * @test
      */
-    public function testChannelCanBeDisconnect()
+    public function testChannelCanBeDisconnect(): void
     {
         $this->amqpChannel
             ->expects($this->once())
