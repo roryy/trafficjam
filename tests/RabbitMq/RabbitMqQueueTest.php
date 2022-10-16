@@ -9,12 +9,11 @@
  */
 namespace Trafficjam\Test\RabbitMq;
 
-use Trafficjam\BasicConsumeMessage;
-use Trafficjam\ConsumeMessage;
+use Trafficjam\BasicConsumableMessage;
+use Trafficjam\ConsumableMessageInterface;
 use Trafficjam\NoConnectionException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Trafficjam\RabbitMq\Channel;
 use Trafficjam\RabbitMq\Connection;
 use Trafficjam\RabbitMq\PublishMessage;
@@ -42,7 +41,6 @@ class RabbitMqQueueTest extends TestCase
             $this->connection,
             self::QUEUE_NAME
         );
-        $this->queue->setLogger(new NullLogger());
     }
 
     /**
@@ -62,6 +60,11 @@ class RabbitMqQueueTest extends TestCase
 
         /** @var Channel|MockObject $channel */
         $channel = $this->createMock(Channel::class);
+
+        $channel->expects($this->once())
+            ->method('declareQueue')
+            ->with(self::QUEUE_NAME, true);
+
         $channel->expects($this->once())
             ->method('publish')
             ->with(new PublishMessage(
@@ -70,7 +73,7 @@ class RabbitMqQueueTest extends TestCase
             ));
 
         $this->connection
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('getChannel')
             ->willReturn($channel);
 
@@ -101,11 +104,16 @@ class RabbitMqQueueTest extends TestCase
     {
         $this->connect();
 
-        $callback = function (ConsumeMessage $msg) {
+        $callback = function (ConsumableMessageInterface $msg) {
         };
 
         /** @var Channel|MockObject $channel */
         $channel = $this->createMock(Channel::class);
+
+        $channel->expects($this->once())
+            ->method('declareQueue')
+            ->with(self::QUEUE_NAME, true);
+
         $channel->expects($this->once())
             ->method('consume')
             ->with(
@@ -114,7 +122,7 @@ class RabbitMqQueueTest extends TestCase
             );
 
         $this->connection
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('getChannel')
             ->willReturn($channel);
 
@@ -138,7 +146,7 @@ class RabbitMqQueueTest extends TestCase
             ->willReturn($channel);
 
         $this->queue->acknowledge(
-            new BasicConsumeMessage(self::TEST_MESSAGE, '1')
+            new BasicConsumableMessage(self::TEST_MESSAGE, '1')
         );
     }
 
@@ -147,7 +155,7 @@ class RabbitMqQueueTest extends TestCase
      */
     public function testQueuePopReturnsMessage(): void
     {
-        $consumeMessage = new BasicConsumeMessage(self::TEST_MESSAGE, '1');
+        $consumeMessage = new BasicConsumableMessage(self::TEST_MESSAGE, '1');
 
         /** @var Channel|MockObject $channel */
         $channel = $this->createMock(Channel::class);

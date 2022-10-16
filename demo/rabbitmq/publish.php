@@ -13,7 +13,7 @@ use Trafficjam\RabbitMq\Connection;
 use Trafficjam\RabbitMq\RabbitMqQueue;
 use Trafficjam\Trafficjam;
 
-$connection = new Connection('localhost', 5672, 'guest', 'guest');
+$connection = new Connection('rabbitmq', 5672, 'guest', 'guest');
 
 $queue = new RabbitMqQueue($connection, 'test_queue', true);
 

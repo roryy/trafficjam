@@ -9,18 +9,18 @@
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-use Trafficjam\ConsumeMessage;
+use Trafficjam\ConsumableMessageInterface;
 use Trafficjam\RabbitMq\Connection;
 use Trafficjam\RabbitMq\RabbitMqQueue;
 use Trafficjam\Trafficjam;
 
-$connection = new Connection('localhost', 5672, 'guest', 'guest');
+$connection = new Connection('rabbitmq', 5672, 'guest', 'guest');
 
 $queue = new RabbitMqQueue($connection, 'test_queue', true);
 
 $trafficjam = new Trafficjam($queue);
 
-$trafficjam->consume(function (ConsumeMessage $msg) use ($trafficjam) {
+$trafficjam->consume(function (ConsumableMessageInterface $msg) use ($trafficjam) {
     $message = $msg->getMessage();
     echo ' msg: '. $message .PHP_EOL;
 

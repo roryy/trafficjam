@@ -11,9 +11,7 @@ declare(strict_types=1);
 
 namespace Trafficjam;
 
-use DateTimeInterface;
-
-interface ConsumeMessage
+interface ConsumableMessageInterface
 {
     public function getMessage(): string;
 

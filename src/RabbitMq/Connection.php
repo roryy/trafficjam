@@ -15,15 +15,9 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class Connection
 {
-    /**
-     * @var AMQPStreamConnection
-     */
-    private $connection;
+    private AMQPStreamConnection $connection;
 
-    /**
-     * @var Channel
-     */
-    private $channel;
+    private Channel $channel;
 
     public function __construct(string $host, int $port, string $username, string $password)
     {

@@ -11,100 +11,74 @@ declare(strict_types=1);
 
 namespace Trafficjam\RabbitMq;
 
-use Trafficjam\ConsumeMessage;
+use Trafficjam\ConsumableMessageInterface;
 use Trafficjam\NoConnectionException;
-use Trafficjam\Queue;
-use Psr\Log\LoggerAwareInterface;
+use Trafficjam\QueueInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-final class RabbitMqQueue implements Queue, LoggerAwareInterface
+final class RabbitMqQueue implements QueueInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var string|null
-     */
-    private $routingKey;
+    private ?string $routingKey;
 
-    /**
-     * @var bool
-     */
-    private $durable;
+    private bool $durable;
 
-    /**
-     * @var string|null
-     */
-    private $exchange;
+    private ?string $exchange;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         Connection $connection,
         string $name,
         bool $durable = true,
         ?string $exchange = null,
-        ?string $routingKey = null
+        ?string $routingKey = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->connection = $connection;
         $this->name = $name;
-        $this->routingKey = $name;
         $this->durable = $durable;
-        $this->logger = new NullLogger();
         $this->exchange = $exchange;
         $this->routingKey = $routingKey;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
-     * @param string $message
-     *
      * @throws NoConnectionException
      */
     public function publish(string $message): void
     {
         $this->checkConnection();
 
-        $routingKey = $this->routingKey;
-        if (empty($routingKey)) {
-            $routingKey = $this->name;
-        }
-
+        $this->connection->getChannel()->declareQueue($this->getName(), $this->durable);
         $this->connection->getChannel()->publish(new PublishMessage(
             $message,
-            $routingKey,
+            $this->routingKey ?? $this->name,
             $this->exchange
         ));
     }
 
     /**
-     * @param callable $callback
-     *
      * @throws NoConnectionException
      */
     public function consume(callable $callback): void
     {
         $this->checkConnection();
 
+        $this->connection->getChannel()->declareQueue($this->getName(), $this->durable);
         $this->connection->getChannel()->consume($this->getName(), $callback);
     }
 
-    public function acknowledge(ConsumeMessage $consumeMessage): void
+    public function acknowledge(ConsumableMessageInterface $consumeMessage): void
     {
         $this->connection->getChannel()->acknowledge((int) $consumeMessage->getId());
     }
 
-    public function pop(): ConsumeMessage
+    public function pop(): ConsumableMessageInterface
     {
         return $this->connection->getChannel()->pop($this->getName());
     }
@@ -127,11 +101,6 @@ final class RabbitMqQueue implements Queue, LoggerAwareInterface
 
             throw new NoConnectionException('No connection with RabbitMQ');
         }
-    }
-
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
     }
 
     public function disconnect(): void

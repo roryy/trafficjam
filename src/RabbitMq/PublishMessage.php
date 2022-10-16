@@ -13,20 +13,11 @@ namespace Trafficjam\RabbitMq;
 
 class PublishMessage
 {
-    /**
-     * @var string
-     */
-    private $message;
+    private string $message;
 
-    /**
-     * @var string
-     */
-    private $routingKey;
+    private ?string $routingKey;
 
-    /**
-     * @var string
-     */
-    private $exchange;
+    private ?string $exchange;
 
     public function __construct(string $message, ?string $routingKey = null, ?string $exchange = null)
     {

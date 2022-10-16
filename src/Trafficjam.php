@@ -4,17 +4,14 @@ namespace Trafficjam;
 
 class Trafficjam
 {
-    /**
-     * @var Queue
-     */
-    private $queue;
+    private QueueInterface $queue;
 
-    public function __construct(Queue $queue)
+    public function __construct(QueueInterface $queue)
     {
         $this->queue = $queue;
     }
 
-    public function getQueue(): Queue
+    public function getQueue(): QueueInterface
     {
         return $this->queue;
     }
@@ -30,14 +27,14 @@ class Trafficjam
     }
 
     /**
-     * @throws QueueIsEmpty
+     * @throws QueueIsEmptyException
      */
-    public function pop(): ConsumeMessage
+    public function pop(): ConsumableMessageInterface
     {
         return $this->queue->pop();
     }
     
-    public function acknowledge(ConsumeMessage $message): void
+    public function acknowledge(ConsumableMessageInterface $message): void
     {
         $this->queue->acknowledge($message);
     }

@@ -13,15 +13,12 @@ namespace Trafficjam\RabbitMq;
 
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
-use Trafficjam\BasicConsumeMessage;
-use Trafficjam\ConsumeMessage;
+use Trafficjam\BasicConsumableMessage;
+use Trafficjam\ConsumableMessageInterface;
 
 class Channel
 {
-    /**
-     * @var AMQPChannel
-     */
-    private $channel;
+    private AMQPChannel $channel;
 
     public function __construct(AMQPChannel $channel)
     {
@@ -36,7 +33,7 @@ class Channel
     public function consume(string $name, callable $callback): void
     {
         $callback = function (AMQPMessage $message) use ($callback) {
-            $message = new BasicConsumeMessage($message->getBody(), (string) $message->getDeliveryTag());
+            $message = new BasicConsumableMessage($message->getBody(), (string) $message->getDeliveryTag());
 
             call_user_func($callback, $message);
         };
@@ -56,12 +53,12 @@ class Channel
         }
     }
 
-    public function pop(string $name): ConsumeMessage
+    public function pop(string $name): ConsumableMessageInterface
     {
         /** @var AMQPMessage $message */
         $message = $this->channel->basic_get($name);
 
-        return new BasicConsumeMessage($message->getBody(), (string) $message->getDeliveryTag());
+        return new BasicConsumableMessage($message->getBody(), (string) $message->getDeliveryTag());
     }
 
     public function publish(PublishMessage $publisher): void
@@ -69,6 +66,11 @@ class Channel
         $message = new AMQPMessage($publisher->getMessage());
 
         $this->channel->basic_publish($message, $publisher->getExchange(), $publisher->getRoutingKey());
+    }
+
+    public function declareQueue(string $name, bool $durable): void
+    {
+        $this->channel->queue_declare($name, false, $durable);
     }
 
     public function disconnect(): void

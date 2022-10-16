@@ -12,20 +12,17 @@ declare(strict_types=1);
 namespace Trafficjam\RabbitMq;
 
 use DateTimeInterface;
-use Trafficjam\ConsumeMessage;
+use Trafficjam\ConsumableMessageInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
-final class Message implements ConsumeMessage
+final class Message implements ConsumableMessageInterface
 {
     /**
      * @var AMQPMessage
      */
-    private $message;
+    private AMQPMessage $message;
 
-    /**
-     * @var Channel
-     */
-    private $channel;
+    private Channel $channel;
 
     public function __construct(AMQPMessage $message, Channel $channel)
     {
@@ -36,11 +33,6 @@ final class Message implements ConsumeMessage
     public function getMessage(): string
     {
         return $this->message->getBody();
-    }
-
-    public function getDateTime(): DateTimeInterface
-    {
-        // TODO: Implement getDateTime() method.
     }
 
     public function getId(): string

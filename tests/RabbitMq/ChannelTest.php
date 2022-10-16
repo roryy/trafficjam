@@ -9,8 +9,8 @@
  */
 namespace Trafficjam\Test\RabbitMq;
 
-use Trafficjam\BasicConsumeMessage;
-use Trafficjam\ConsumeMessage;
+use Trafficjam\BasicConsumableMessage;
+use Trafficjam\ConsumableMessageInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -66,7 +66,7 @@ class ChannelTest extends TestCase
      */
     public function testChannelCanConsume(): void
     {
-        $callback = function (ConsumeMessage $msg) {
+        $callback = function (ConsumableMessageInterface $msg) {
             $this->assertSame(self::MESSAGE, $msg->getMessage());
             $this->assertSame('1', $msg->getId());
         };
@@ -82,7 +82,7 @@ class ChannelTest extends TestCase
                 false,
                 false,
                 function (AMQPMessage $message) use ($callback) {
-                    $message = new BasicConsumeMessage($message->body, $message->getDeliveryTag());
+                    $message = new BasicConsumableMessage($message->body, $message->getDeliveryTag());
 
                     call_user_func($callback, $message);
                 }

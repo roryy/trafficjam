@@ -4,8 +4,8 @@ namespace Trafficjam\Test;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Trafficjam\BasicConsumeMessage;
-use Trafficjam\Queue;
+use Trafficjam\BasicConsumableMessage;
+use Trafficjam\QueueInterface;
 use Trafficjam\Trafficjam;
 
 class TrafficjamTest extends TestCase
@@ -13,7 +13,7 @@ class TrafficjamTest extends TestCase
     private const MESSAGE = 'test';
 
     /**
-     * @var MockObject|Queue
+     * @var MockObject|QueueInterface
      */
     private $queue;
     /**
@@ -23,7 +23,7 @@ class TrafficjamTest extends TestCase
 
     public function setUp(): void
     {
-        $this->queue = $this->createMock(Queue::class);
+        $this->queue = $this->createMock(QueueInterface::class);
         $this->trafficjam = new Trafficjam($this->queue);
     }
 
@@ -75,7 +75,7 @@ class TrafficjamTest extends TestCase
      */
     public function popReturnsConsumeMessage(): void
     {
-        $consumeMessage = new BasicConsumeMessage(self::MESSAGE, 1);
+        $consumeMessage = new BasicConsumableMessage(self::MESSAGE, 1);
 
         $this->queue
             ->expects($this->once())
@@ -93,7 +93,7 @@ class TrafficjamTest extends TestCase
      */
     public function acknowledgeCallsAcknowledgeInQueue(): void
     {
-        $consumeMessage = new BasicConsumeMessage(self::MESSAGE, 1);
+        $consumeMessage = new BasicConsumableMessage(self::MESSAGE, 1);
 
         $this->queue
             ->expects($this->once())

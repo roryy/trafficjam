@@ -11,16 +11,16 @@ declare(strict_types=1);
 
 namespace Trafficjam;
 
-interface Queue
+interface QueueInterface
 {
     public function publish(string $message): void;
 
     public function consume(callable $callback): void;
 
-    public function acknowledge(ConsumeMessage $consumeMessage): void;
+    public function acknowledge(ConsumableMessageInterface $consumeMessage): void;
 
     /**
-     * @throws QueueIsEmpty
+     * @throws QueueIsEmptyException
      */
-    public function pop(): ConsumeMessage;
+    public function pop(): ConsumableMessageInterface;
 }
