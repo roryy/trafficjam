@@ -6,7 +6,7 @@ Please do not use in production as BC breaks can occur before reaching version 1
 
 ## Installation
 ~~~
-composer require roryy/trafficjam "0.5.*"
+composer require roryy/trafficjam "0.6.*"
 ~~~
 
 ## Usage
