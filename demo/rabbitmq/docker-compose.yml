@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  php-fpm:
+    image: php:7.4-fpm
+    volumes:
+      - ../../:/app
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
