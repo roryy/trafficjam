@@ -6,7 +6,7 @@
     "require":{
         "php": ">=7.4",
         "php-amqplib/php-amqplib": "~3.3",
-        "psr/log": "^1.0"
+        "psr/log": "*"
     },
     "autoload": {
         "psr-4": {
